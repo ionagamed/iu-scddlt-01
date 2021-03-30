@@ -109,45 +109,6 @@ interface NotOk {
 
 type UseEthereumResult = Ok | NotOk
 
-export interface UserProfile {
-  email: string
-  bio: string
-  name: string
-  isRegistered: boolean
-}
-
-export interface PatentPayload {
-  inventorName: string
-  applicantName: string
-  state: string
-  addr: string
-  title: string
-  website: string
-  country: string
-  patentNumber: string
-  decisionNumber: string
-  decisionDate: number
-  lawNumber: string
-  classificationNumber: string
-  certificationAuthorityName: string
-}
-
-export interface Patent {
-  id: number
-  owner: string
-  payload: PatentPayload
-}
-
-export interface MixedPatent extends PatentPayload, Patent {
-}
-
-export function mixPatent (patent: Patent): MixedPatent {
-  return {
-    ...patent,
-    ...patent.payload
-  }
-}
-
 class Ethereum {
   constructor (
     public account: string,
@@ -167,32 +128,6 @@ class Ethereum {
 
   async sendTokens (to: string, amount: number): Promise<void> {
     return await this.contract.methods.sendTokens(to, amount).send({ from: this.account, value: 343 * 10 ** 12 })
-  }
-
-  // nnnnnn
-
-  async getMyProfile (): Promise<UserProfile> {
-    return await this.contract.methods.getUserProfile().call({ from: this.account })
-  }
-
-  async updateMyProfile (values: UserProfile): Promise<void> {
-    return await this.contract.methods.registerUser(values.name, values.email, values.bio).send({ from: this.account })
-  }
-
-  async getAllPatents (): Promise<Patent[]> {
-    return (await this.contract.methods.getAllPatents().call()).map((x: any) => ({ ...x }))
-  }
-
-  async createPatent (values: PatentPayload): Promise<void> {
-    return await this.contract.methods.createPatent(values).send({ from: this.account })
-  }
-
-  async getPatent (id: string): Promise<Patent> {
-    return await this.contract.methods.getPatent(Number(id)).call()
-  }
-
-  async transferPatent (id: number, transferTo: string): Promise<void> {
-    return await this.contract.methods.transferPatent(id, transferTo).send({ from: this.account })
   }
 }
 
